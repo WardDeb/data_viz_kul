@@ -1,0 +1,20 @@
+name: Install
+on: [push, pull_request]
+
+jobs:
+  test-install:
+    name: pip_install
+    runs-on: ubuntu-latest
+    needs: build-linux
+    strategy:
+      matrix:
+        python-version: ['3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+      - name: install
+        run: |
+          pip install .
