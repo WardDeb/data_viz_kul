@@ -1,0 +1,18 @@
+[project]
+name = "Data_viz_kul_group10"
+version = "0.0.0"
+description = "Code for the first project of kul's data visualization course"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "marimo>=0.11.17",
+    "anywidget>=0.9.13",
+    "brushable-widget>=0.1.6",
+    "matplotlib>=3.10.0",
+    "numpy>=2.2.3",
+    "pandas>=2.2.3",
+    "svg-py>=1.5.0",
+    "traitlets>=5.14.3",
+    "seaborn"
+]
+
