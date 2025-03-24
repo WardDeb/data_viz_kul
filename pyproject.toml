@@ -13,6 +13,10 @@ dependencies = [
     "pandas>=2.2.3",
     "svg-py>=1.5.0",
     "traitlets>=5.14.3",
-    "seaborn"
+    "seaborn",
+    "uv",
+    "altair"
 ]
 
+[tool.setuptools.packages.find]
+exclude = ["preprocessing", "raw_data"]
