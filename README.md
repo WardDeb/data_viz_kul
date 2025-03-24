@@ -1,5 +1,11 @@
 # data_viz_kul
 
+## How to run
+
+  > clone repo  
+  > pip install .  
+  > marimo run preprocessing/preprocessing.py
+
 ## Project - pig feeding
 
 Dataset is available via [mendeley](https://data.mendeley.com/datasets/2mbw72m3g8/1). 
