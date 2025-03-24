@@ -18,3 +18,5 @@ dependencies = [
     "altair"
 ]
 
+[tool.setuptools.packages.find]
+exclude = ["preprocessing", "raw_data"]
