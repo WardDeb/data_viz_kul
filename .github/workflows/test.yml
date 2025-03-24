@@ -1,4 +1,4 @@
-name: Install
+name: test
 on: [push, pull_request]
 
 jobs:
@@ -17,3 +17,6 @@ jobs:
       - name: install
         run: |
           pip install .
+      - name: run preprocessing
+        run: |
+          python preprocessing/preprocessing.py
