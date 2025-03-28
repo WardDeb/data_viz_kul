@@ -1,5 +1,8 @@
 name: pages_deployment
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
     build:
