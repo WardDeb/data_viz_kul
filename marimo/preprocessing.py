@@ -61,5 +61,17 @@ def _(df, sns):
     return
 
 
+@app.cell
+def _(df):
+    df.groupby('pig')['station'].nunique()
+    return
+
+
+@app.cell
+def _(df):
+    df
+    return
+
+
 if __name__ == "__main__":
     app.run()
