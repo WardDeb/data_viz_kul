@@ -11,7 +11,8 @@ def _():
     import plotly.express as px
     import pandas as pd
     import polars as pl
-    return mo, pd, pl, plt, px
+    import pyarrow
+    return mo, pd, pl, plt, px, pyarrow
 
 
 @app.cell
@@ -21,7 +22,7 @@ def _(mo):
 
 
 @app.cell
-def _(mo, pd, pl):
+def _(mo, pd):
     df = pd.read_parquet(
         str(mo.notebook_location()) + '/raw_data/exp1_feeding_data.parquet'
     )
@@ -30,7 +31,6 @@ def _(mo, pd, pl):
     del df['hour']
     df['start'] = pd.to_datetime(df['start'])
     df['end'] = pd.to_datetime(df['end'])
-
     return (df,)
 
 
