@@ -12,13 +12,13 @@ dependencies = [
     "numpy>=2.2.3",
     "pandas>=2.2.3",
     "polars==1.26.0",
-    "pyarrow",
+    "pyarrow==19.0.1",
     "svg-py>=1.5.0",
     "traitlets>=5.14.3",
-    "seaborn",
+    "seaborn==0.13.2",
     "uv",
-    "altair",
-    "plotly"
+    "altair==5.5.0",
+    "plotly==6.0.1"
 ]
 
 [tool.setuptools.packages.find]

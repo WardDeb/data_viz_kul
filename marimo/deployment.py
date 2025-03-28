@@ -22,9 +22,8 @@ def _(mo):
 
 @app.cell
 def _(mo, pd, pl):
-    df = pl.read_csv(
-        str(mo.notebook_location()) + '/raw_data/exp1_feeding_data.csv.gz',
-        null_values=["NA"]
+    df = pl.read_parquet(
+        str(mo.notebook_location()) + '/raw_data/exp1_feeding_data.parquet'
     ).to_pandas()
     # Redundant information can be removed
     del df['date']
