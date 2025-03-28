@@ -18,7 +18,7 @@ jobs:
               pip install .
           - name: create notebook
             run: |
-              marimo export html-wasm marimo/deployment.py -o deploydir --mode run
+              marimo export html-wasm marimo/deployment.py -o deploydir --mode edit
           - name: upload pages artifact
             uses: actions/upload-pages-artifact@v3
             with:
