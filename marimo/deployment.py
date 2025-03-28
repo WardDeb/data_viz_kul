@@ -23,9 +23,9 @@ def _(mo):
 
 @app.cell
 def _(mo, pd):
-    df = pd.read_parquet(
-        str(mo.notebook_location()) + '/raw_data/exp1_feeding_data.parquet'
-    )
+    df = pl.read_csv(
+        str(mo.notebook_location()) + '/raw_data/exp1_feeding_data.csv'
+    ).to_pandas()
     # Redundant information can be removed
     del df['date']
     del df['hour']
