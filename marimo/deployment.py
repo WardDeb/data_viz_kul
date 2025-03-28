@@ -22,10 +22,10 @@ def _(mo):
 
 
 @app.cell
-def _(mo, pd):
+def _(pd, pl):
     df = pl.read_csv(
-        str(mo.notebook_location()) + '/raw_data/exp1_feeding_data.csv'
-    ).to_pandas()
+        'https://github.com/WardDeb/data_viz_kul/raw/refs/heads/main/marimo/raw_data/exp1_feeding_data.csv'
+    ).to_pandas().sample(1000)
     # Redundant information can be removed
     del df['date']
     del df['hour']
