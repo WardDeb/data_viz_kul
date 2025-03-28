@@ -11,7 +11,7 @@ dependencies = [
     "matplotlib>=3.10.0",
     "numpy>=2.2.3",
     "pandas>=2.2.3",
-    "polars",
+    "polars==1.26.0",
     "pyarrow",
     "svg-py>=1.5.0",
     "traitlets>=5.14.3",
