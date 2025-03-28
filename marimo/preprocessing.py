@@ -7,12 +7,13 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import marimo as mo
-    import pandas as pd
+    import polars as pl
     import seaborn as sns
+    import pandas as pd
 
     import warnings
     warnings.filterwarnings("ignore", category=UserWarning)
-    return mo, pd, sns, warnings
+    return mo, pd, pl, sns, warnings
 
 
 @app.cell
@@ -29,12 +30,14 @@ def _(mo):
 
 
 @app.cell
-def _(pd):
-    df = pd.read_csv('raw_data/exp1_feeding_data.csv.gz', compression='gzip')
+def _(mo, pd, pl):
+    df = pl.read_csv(
+        str(mo.notebook_location()) + '/raw_data/exp1_feeding_data.csv.gz',
+        null_values=["NA"]
+    ).to_pandas()
     # Redundant information can be removed
     del df['date']
     del df['hour']
-    df['duration']
     df['start'] = pd.to_datetime(df['start'])
     df['end'] = pd.to_datetime(df['end'])
     print(df.dtypes)

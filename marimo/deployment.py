@@ -5,33 +5,30 @@ app = marimo.App(width="medium")
 
 
 @app.cell
-def _(mo):
-    mo.md(
-        r"""
-        # Deployment of the pigs feed dataset
-
-        Some information wrt. the dataset & ideas.
-        """
-    )
-    return
-
-
-@app.cell
 def _():
     import marimo as mo
     import matplotlib.pyplot as plt
     import plotly.express as px
     import pandas as pd
-    return mo, pd, plt, px
+    import polars as pl
+    return mo, pd, pl, plt, px
 
 
 @app.cell
-def _(pd):
-    df = pd.read_csv('https://raw.githubusercontent.com/WardDeb/data_viz_kul/raw/refs/heads/main/raw_data/exp1_feeding_data.csv.gz', compression='gzip')
+def _(mo):
+    mo.md(r"""# Pig feeding interactive example""")
+    return
+
+
+@app.cell
+def _(mo, pd, pl):
+    df = pl.read_csv(
+        str(mo.notebook_location()) + '/raw_data/exp1_feeding_data.csv.gz',
+        null_values=["NA"]
+    ).to_pandas()
     # Redundant information can be removed
     del df['date']
     del df['hour']
-    df['duration']
     df['start'] = pd.to_datetime(df['start'])
     df['end'] = pd.to_datetime(df['end'])
 
@@ -39,8 +36,8 @@ def _(pd):
 
 
 @app.cell
-def _(df):
-    df.head()
+def _(mo):
+    mo.md(r"""# Example of an interactive plot""")
     return
 
 
