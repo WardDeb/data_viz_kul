@@ -15,8 +15,9 @@ dependencies = [
     "traitlets>=5.14.3",
     "seaborn",
     "uv",
-    "altair"
+    "altair",
+    "plotly"
 ]
 
 [tool.setuptools.packages.find]
-exclude = ["preprocessing", "raw_data"]
+exclude = ["marimo", "raw_data", "sketches"]
