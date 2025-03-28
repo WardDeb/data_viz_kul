@@ -1,4 +1,14 @@
 import marimo
+import pandas as pd
+
+
+df = pd.read_csv("raw_data/exp1_feeding_data.csv.gz")
+# Redundant information can be removed
+del df['date']
+del df['hour']
+df['duration']
+df['start'] = pd.to_datetime(df['start'])
+df['end'] = pd.to_datetime(df['end'])
 
 __generated_with = "0.11.24"
 app = marimo.App(width="medium")
@@ -23,20 +33,6 @@ def _():
     import plotly.express as px
     import pandas as pd
     return mo, pd, plt, px
-
-
-@app.cell
-def _(pd):
-    df = pd.read_csv('https://raw.githubusercontent.com/WardDeb/data_viz_kul/raw/refs/heads/main/raw_data/exp1_feeding_data.csv.gz', compression='gzip')
-    # Redundant information can be removed
-    del df['date']
-    del df['hour']
-    df['duration']
-    df['start'] = pd.to_datetime(df['start'])
-    df['end'] = pd.to_datetime(df['end'])
-
-    return (df,)
-
 
 @app.cell
 def _(df):
