@@ -27,7 +27,7 @@ def _():
 
 @app.cell
 def _(pd):
-    df = pd.read_csv('raw_data/exp1_feeding_data.csv.gz', compression='gzip')
+    df = pd.read_csv('https://github.com/WardDeb/data_viz_kul/raw/refs/heads/main/raw_data/exp1_feeding_data.csv.gz', compression='gzip')
     # Redundant information can be removed
     del df['date']
     del df['hour']
