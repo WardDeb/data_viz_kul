@@ -20,6 +20,3 @@ jobs:
       - name: run preprocessing
         run: |
           python marimo/preprocessing.py
-      - name: run deployment
-        run: |
-          python marimo/deployment.py
