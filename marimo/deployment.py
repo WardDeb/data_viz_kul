@@ -22,10 +22,10 @@ def _(mo):
 
 
 @app.cell
-def _(mo, pd, pl):
-    df = pl.read_csv(
+def _(mo, pd):
+    df = pd.read_csv(
         str(mo.notebook_location() / 'processed_data/subset.csv')
-    ).to_pandas()
+    )
     # Redundant information can be removed
     del df['date']
     del df['hour']
