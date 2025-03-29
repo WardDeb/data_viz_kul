@@ -19,16 +19,15 @@ def _():
 @app.cell
 async def _(micropip):
     await micropip.install("plotly")
-    await micropip.install("pandas")
     import plotly
     return (plotly,)
 
 
 @app.cell
 def _():
-    import pandas as pd
+    import polars as pl
     import plotly.express as px
-    return pd, px
+    return pl, px
 
 
 @app.cell
@@ -44,22 +43,18 @@ def _(mo):
 
 
 @app.cell
-def _(mo, pd):
-    df = pd.read_csv(
+def _(mo, pl):
+    df = pl.read_csv(
         str(mo.notebook_location() / 'public/subset.csv')
     )
-    # Redundant information can be removed
-    del df['date']
-    del df['hour']
-    df['start'] = pd.to_datetime(df['start'])
-    df['end'] = pd.to_datetime(df['end'])
+    df.head()
     return (df,)
 
 
 @app.cell
 def _(df, mo, px):
     plot = mo.ui.plotly(
-      px.scatter(x=df['rate'], y=df['intake'], width=600, height=300)
+      px.scatter(x=df['duration'], y=df['intake'], width=600, height=300)
     )
     plot
     return (plot,)
