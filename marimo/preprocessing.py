@@ -9,11 +9,7 @@ def _():
     import marimo as mo
     import polars as pl
     import seaborn as sns
-    import pandas as pd
-
-    import warnings
-    warnings.filterwarnings("ignore", category=UserWarning)
-    return mo, pd, pl, sns, warnings
+    return mo, pl, sns
 
 
 @app.cell
@@ -22,25 +18,41 @@ def _(mo):
         r"""
         # Exploration
 
-        Initial exploration of the data, read up the data and make some plots.
-        Make sure our date, start and end are parsed appropriately as time.
+        Initial exploration of the data, read up the data and pre-process it. The main work we need to do is make sure the date, start & end are proper datetimes, and filter the data:
+
+        First of all, instances with tattoo == 'filling' aren't feeding events, but rather filling of the trough. Additionaly, instances with pig == 0 and tattoo == 'filling' or 'ghost' are either fillings or erroneous measurements (no pig id registered). These should be filtered.
         """
     )
     return
 
 
 @app.cell
-def _(pd, pl):
+def _(pl):
     df = pl.read_csv(
         'raw_data/exp1_feeding_data.csv.gz'
-    ).to_pandas()
-    # Redundant information can be removed
-    del df['date']
-    del df['hour']
-    df['start'] = pd.to_datetime(df['start'])
-    df['end'] = pd.to_datetime(df['end'])
-    print(df.dtypes)
+    )
+    df = df.with_columns(
+        pl.col("date").str.to_datetime("%Y-%m-%d").alias("date"),
+        pl.col("start").str.to_datetime("%Y-%m-%d %H:%M:%S").alias("start"),
+        pl.col("end").str.to_datetime("%Y-%m-%d %H:%M:%S").alias("end"),
+        pl.col("tattoo").str.strip_chars().alias("tattoo")
+    )
+    df = df.filter(pl.col("tattoo") != "FILLING")
+    df = df.filter(pl.col("tattoo") != "GHOST VISIT")
+    df.head()
     return (df,)
+
+
+@app.cell
+def _(df):
+    df["tattoo"].unique()
+    return
+
+
+@app.cell
+def _(df):
+    df["pig"].unique()
+    return
 
 
 @app.cell
@@ -60,12 +72,6 @@ def _(df, sns):
         x='station',
         y='duration'
     )
-    return
-
-
-@app.cell
-def _(df):
-    df.groupby('pig')['station'].nunique()
     return
 
 
