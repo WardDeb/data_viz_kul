@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.11.24"
+__generated_with = "0.11.31"
 app = marimo.App(width="medium")
 
 
@@ -22,10 +22,10 @@ def _(mo):
 
 
 @app.cell
-def _(pd, pl):
+def _(mo, pd, pl):
     df = pl.read_csv(
-        'https://github.com/WardDeb/data_viz_kul/raw/refs/heads/main/marimo/raw_data/exp1_feeding_data.csv'
-    ).to_pandas().sample(1000)
+        str(mo.notebook_location() / 'processed_data/subset.csv')
+    ).to_pandas()
     # Redundant information can be removed
     del df['date']
     del df['hour']

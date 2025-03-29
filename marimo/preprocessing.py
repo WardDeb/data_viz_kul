@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.11.24"
+__generated_with = "0.11.31"
 app = marimo.App(width="medium")
 
 
@@ -30,9 +30,9 @@ def _(mo):
 
 
 @app.cell
-def _(mo, pd, pl):
+def _(pd, pl):
     df = pl.read_csv(
-        str(mo.notebook_location()) + '/raw_data/exp1_feeding_data.csv'
+        'raw_data/exp1_feeding_data.csv.gz'
     ).to_pandas()
     # Redundant information can be removed
     del df['date']
