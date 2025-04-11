@@ -16,9 +16,15 @@ jobs:
           - name: install
             run: |
               pip install .
-          - name: create notebook
+          - name: create notebook_wd
             run: |
-              marimo export html-wasm marimo/deployment.py -o deploydir --mode run
+              marimo export html-wasm marimo/implementation_wd.py -o deploydir/implementation_wd.html --mode run --no-show-code
+          - name: create notebook_example
+            run: |
+              marimo export html-wasm marimo/deployment.py -o deploydir/deploy.html --mode run --no-show-code
+          - name: generate index
+            run: |
+              python scripts/gen_index.py
           - name: upload pages artifact
             uses: actions/upload-pages-artifact@v3
             with:
