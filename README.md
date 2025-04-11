@@ -4,7 +4,7 @@
 
   > clone repo  
   > pip install .  
-  > marimo run preprocessing/preprocessing.py
+  > marimo run marimo
 
 ## Project - pig feeding
 

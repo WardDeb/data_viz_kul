@@ -28,6 +28,7 @@ def _(mo):
 
 @app.cell
 def _(pl):
+    # Read up data, parse to filling / ghost dataframes and save into the public folder for implementation.
     df = pl.read_csv(
         'raw_data/exp1_feeding_data.csv.gz'
     )
@@ -37,10 +38,15 @@ def _(pl):
         pl.col("end").str.to_datetime("%Y-%m-%d %H:%M:%S").alias("end"),
         pl.col("tattoo").str.strip_chars().alias("tattoo")
     )
-    df = df.filter(pl.col("tattoo") != "FILLING")
-    df = df.filter(pl.col("tattoo") != "GHOST VISIT")
-    df.head()
-    return (df,)
+    df_fill = df.filter(
+        (pl.col("tattoo") == "FILLING" )
+    )
+    df_ghost = df.filter(
+        (pl.col("tattoo") == "GHOST VISIT")
+    )
+    df_fill.to_pandas()[['start', 'end', 'station']].to_csv('marimo/public/filling.csv')
+    df_ghost.to_pandas()[['start', 'end', 'station']].to_csv('marimo/public/ghosts.csv')
+    return df, df_fill, df_ghost
 
 
 @app.cell
@@ -76,8 +82,10 @@ def _(df, sns):
 
 
 @app.cell
-def _(df):
-    df
+def _(df_ghost, pl):
+    df_ghost.filter(
+        (pl.col("tattoo") == "FILLING" )
+    )
     return
 
 
