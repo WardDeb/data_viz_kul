@@ -36,7 +36,7 @@ def generate_index():
                       f'      <div class="p-4 border border-gray-200 rounded">\n'
                       f'        <h3 class="text-lg font-semibold mb-2">{display_name}</h3>\n'
                       f'        <div class="flex gap-2">\n'
-                      f'          <a href="{notebook}" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded">Open Notebook</a>\n'
+                      f'          <a href="{notebook.split('/')[-1]}" class="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded">Open Notebook</a>\n'
                       f"        </div>\n"
                       f"      </div>\n"
                   )

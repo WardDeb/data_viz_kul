@@ -44,7 +44,7 @@ def _(mo):
 
 @app.cell
 async def _(micropip):
-    await micropip.install("svg")
+    await micropip.install("svg-py")
     from svg import SVG, Circle, Line, Title, Text, Polygon, G
     return Circle, G, Line, Polygon, SVG, Text, Title
 
