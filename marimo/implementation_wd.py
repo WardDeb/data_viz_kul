@@ -113,9 +113,9 @@ def _(Line, Polygon, Text, np):
     # Parameters for the spiral
     center_x = 400 # middle point of figure, in x
     center_y = 250 # middle point of figure, in y
-    num_points = 1681 # 24 hours * 7 days
-    angle_increment = np.pi / 800  # The angle increment for the spiral
-    line_length_increment = 0.2  # The distance between each point (controls the spiral tightness)
+    num_points = 1681 # 24 hours * 7 days * 10 (resolution)
+    angle_increment = np.pi / 800  # how many points / increment
+    line_length_increment = 0.2  # distance betweens points (tightness)
 
     # Spiral line.
     spiral_elements = []
@@ -169,17 +169,16 @@ def _(Line, Polygon, Text, np):
             Line(x1=x1, y1=y1, x2=x2, y2=y2, stroke="black", stroke_width=3, class_='day')
         )
         # Add the text for the day name
-        text_x = x + _daylen * ndx +5
-        text_y = y + _daylen * ndy +5
+        text_x = x - _daylen - 10 * ndx
+        text_y = y - _daylen - 10 * ndy
         day_text_elements.append(
             Text(x=text_x, y=text_y, text=_d[0], font_size=12, fill="black", class_="day-label")
         )
 
     # # Add sinusoidal wave for day and night
-    # Sinusoid parameters
     sinusoid_elements = []
     sinusoid_points = []  # Define this to store previous points for line connections
-    amplitude = 10  # Height of sine wave
+    amplitude = 15  # Height of sine wave
     frequency = 2 * np.pi / 240 # Full wave every 48 steps (~2 days)
 
     for i in range(0, num_points-1):
@@ -236,15 +235,14 @@ def _(Line, Polygon, Text, np):
     # Create the 'day' polygon (light yellow fill)
     fill_element_day = Polygon(
         points=filled_path_day,
-        fill="lightblue",
+        fill="gray",
         stroke="none",
-        opacity=0.3,
+        opacity=0.2,
         class_="day-night-fill"
     )
 
     # Insert the day and night polygons into your sinusoid elements
     sinusoid_elements.insert(0, fill_element_day)
-    #sinusoid_elements.insert(0, fill_element_night)
     return (
         amplitude,
         angle,
@@ -368,7 +366,7 @@ def _(
             Text(
                 x=cx,
                 y=cy,
-                text=f"pen {r['station'].astype(int)}, event duration = {r['delta'].round(1)} (min)",  
+                text=f"pen {r['station'].astype(int)}, duration = {r['delta'].round(1)} mins",  
                 class_="tooltip-text",
             )
             ]))
@@ -383,9 +381,42 @@ def _(mo):
         allow_select_none = False,
         value='Ghosts !'
     )
-    pen_dist = mo.ui.slider(start=1, stop=20, label="Distance between the pens ", value=3)
+    pen_dist = mo.ui.slider(start=1, stop=50, label="Distance between the pens ", value=3)
     radius_inflation_factor = mo.ui.slider(start=1, stop=10, label="Radius inflation factor", value=1)
     return my_dropdown, pen_dist, radius_inflation_factor
+
+
+@app.cell
+def _(Circle, Text, cat10_dic, my_dropdown):
+    # Legends
+    legends = []
+    legends.append(Text(
+        x=280,
+        y=50,
+        text=my_dropdown.value,
+        font_size=24,
+        fill="black"
+    ))
+
+    for _ix, _i in enumerate(cat10_dic):
+        legends.append(
+            Circle(
+            cx=700,
+            cy=200+(_ix * 20),
+            r=10 ,
+            fill=cat10_dic[_i],
+            fill_opacity=1,
+            stroke="none",
+            stroke_width=1
+            ))
+        legends.append(
+            Text(
+                x=720,
+                y=200+(_ix * 20),
+                text=f"pen {_i}",
+            )
+        )
+    return (legends,)
 
 
 @app.cell
@@ -412,6 +443,7 @@ def _(
     circle_elements,
     day_elements,
     day_text_elements,
+    legends,
     mo,
     sinusoid_elements,
     spiral_elements,
@@ -420,7 +452,7 @@ def _(
     plot = SVG(
         width=800,
         height=600,
-        elements=spiral_elements + sinusoid_elements + circle_elements + day_elements + day_text_elements
+        elements=spiral_elements + sinusoid_elements + circle_elements + day_elements + day_text_elements + legends
     )
     mo.Html(plot.as_str())
     return (plot,)
