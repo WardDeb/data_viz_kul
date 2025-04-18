@@ -22,6 +22,9 @@ jobs:
           - name: create notebook_at
             run: |
               marimo export html-wasm marimo/implementation_at.py -o deploydir/implementation_at.html --mode run --no-show-code
+          - name: create notebook_atwd
+            run: |
+              marimo export html-wasm marimo/implementation_atwd.py -o deploydir/implementation_atwd.html --mode run --no-show-code
           - name: generate index
             run: |
               python scripts/gen_index.py

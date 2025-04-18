@@ -44,9 +44,14 @@ def _(pl):
     df_ghost = df.filter(
         (pl.col("tattoo") == "GHOST VISIT")
     )
+    df_proper = df.filter(
+        (pl.col("tattoo") != "GHOST VISIT"),
+        (pl.col("tattoo") != "FILLING")
+    )
     df_fill.to_pandas()[['start', 'end', 'station']].to_csv('marimo/public/filling.csv')
     df_ghost.to_pandas()[['start', 'end', 'station']].to_csv('marimo/public/ghosts.csv')
-    return df, df_fill, df_ghost
+    df_proper.to_pandas()[['tattoo', 'start', 'end', 'intake', 'station']].to_csv('marimo/public/proper_events.csv')
+    return df, df_fill, df_ghost, df_proper
 
 
 @app.cell
@@ -58,34 +63,6 @@ def _(df):
 @app.cell
 def _(df):
     df["pig"].unique()
-    return
-
-
-@app.cell
-def _(df, sns):
-    sns.violinplot(
-        data=df,
-        x='station',
-        y='intake'
-    )
-    return
-
-
-@app.cell
-def _(df, sns):
-    sns.violinplot(
-        data=df,
-        x='station',
-        y='duration'
-    )
-    return
-
-
-@app.cell
-def _(df_ghost, pl):
-    df_ghost.filter(
-        (pl.col("tattoo") == "FILLING" )
-    )
     return
 
 
