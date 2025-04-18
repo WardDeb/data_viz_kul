@@ -19,9 +19,9 @@ jobs:
           - name: create notebook_wd
             run: |
               marimo export html-wasm marimo/implementation_wd.py -o deploydir/implementation_wd.html --mode run --no-show-code
-          - name: create notebook_example
+          - name: create notebook_at
             run: |
-              marimo export html-wasm marimo/deployment.py -o deploydir/deploy.html --mode run --no-show-code
+              marimo export html-wasm marimo/assignment_at.py -o deploydir/assignment_at.html --mode run --no-show-code
           - name: generate index
             run: |
               python scripts/gen_index.py
@@ -47,4 +47,3 @@ jobs:
               uses: actions/deploy-pages@v4
               with:
                   artifact_name: github-pages
-
