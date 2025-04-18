@@ -63,7 +63,6 @@ def _(mo, pl):
         pl.col('start').str.strptime(pl.Datetime).alias('start'),
         pl.col('end').str.strptime(pl.Datetime).alias('end')
     )
-    df
     return (df,)
 
 
@@ -73,12 +72,6 @@ def _():
     center_y = 400 # middle point of figure, in y
     radius = 100
     return center_x, center_y, radius
-
-
-@app.cell
-def _(df):
-    df.to_pandas()
-    return
 
 
 @app.cell
@@ -125,7 +118,7 @@ def _(
         r = radius + d * 100
         x = center_x + r * np.cos(_angle)
         y = center_y + r * np.sin(_angle)
-    
+
         if i == 0:
             path_data += f"M {x} {y} "
         else:
