@@ -48,3 +48,6 @@ jobs:
               with:
                   artifact_name: github-pages
 
+            - name: create notebook_at
+              run: marimo export html-wasm marimo/implementation_at.py -o deploydir/implementation_at.html --mode run --no-show-code
+ 
