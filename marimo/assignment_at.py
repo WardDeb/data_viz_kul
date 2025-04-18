@@ -1,20 +1,7 @@
 import marimo
 
-__generated_with = "0.11.26"
+__generated_with = "0.11.31"
 app = marimo.App(width="full")
-
-
-@app.cell(hide_code=True)
-def _():
-    import micropip
-
-    return (micropip,)
-
-
-@app.cell
-async def _(micropip):
-    await micropip.install(["svg-py", "pyarrow"])
-    return
 
 
 @app.cell(hide_code=True)
@@ -47,6 +34,18 @@ def _():
         time,
         timedelta,
     )
+
+
+@app.cell(hide_code=True)
+def _():
+    import micropip
+    return (micropip,)
+
+
+@app.cell
+async def _(micropip):
+    await micropip.install(["svg-py", "pyarrow"])
+    return
 
 
 @app.cell
