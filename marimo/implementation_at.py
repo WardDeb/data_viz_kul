@@ -7,6 +7,23 @@ app = marimo.App(width="full")
 @app.cell(hide_code=True)
 def _():
     import marimo as mo
+    return (mo,)
+
+
+@app.cell(hide_code=True)
+def _():
+    import micropip
+    return (micropip,)
+
+
+@app.cell
+async def _(micropip):
+    await micropip.install(["svg-py", "pyarrow"])
+    return
+
+
+@app.cell
+def _():
     import pandas as pd
     import numpy as np
     import polars as pl
@@ -26,7 +43,6 @@ def _():
         Title,
         abs,
         datetime,
-        mo,
         np,
         pd,
         pi,
@@ -34,18 +50,6 @@ def _():
         time,
         timedelta,
     )
-
-
-@app.cell(hide_code=True)
-def _():
-    import micropip
-    return (micropip,)
-
-
-@app.cell
-async def _(micropip):
-    await micropip.install(["svg-py", "pyarrow"])
-    return
 
 
 @app.cell
