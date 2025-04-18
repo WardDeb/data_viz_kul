@@ -512,7 +512,7 @@ def _(date_picker, end_date, mo, start_date):
 
 @app.cell
 def _(mo, plot1_html, plot2_html):
-    mo.iframe(plot1_html+plot2_html,height=2000)
+    mo.iframe(plot1_html+plot2_html,height=2000, width=2000)
     return
 
 
