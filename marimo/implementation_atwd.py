@@ -17,8 +17,8 @@ def _():
 
 
 @app.cell
-def _():
-    #await micropip.install(["svg-py", "pyarrow"])
+async def _(micropip):
+    await micropip.install(["svg-py", "pyarrow"])
     from svg import SVG, Circle, Line, Title, Text, Polygon, G, Path
     return Circle, G, Line, Path, Polygon, SVG, Text, Title
 
@@ -199,7 +199,6 @@ def _(df, maxtime, mo):
         label="Minimimal event duration.",
         value=0
     )
-
     return duration_selecter, pen_selecter
 
 
