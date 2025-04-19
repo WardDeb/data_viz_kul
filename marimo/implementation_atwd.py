@@ -17,8 +17,8 @@ def _():
 
 
 @app.cell
-async def _(micropip):
-    await micropip.install(["svg-py", "pyarrow"])
+def _():
+    #await micropip.install(["svg-py", "pyarrow"])
     from svg import SVG, Circle, Line, Title, Text, Polygon, G, Path
     return Circle, G, Line, Path, Polygon, SVG, Text, Title
 
@@ -55,7 +55,7 @@ def _():
 
 
 @app.cell
-def _(mo, pl):
+def _(mo, np, pl):
     df = pl.read_csv(
         str(mo.notebook_location() / 'public/proper_events.csv')
     )
@@ -63,7 +63,8 @@ def _(mo, pl):
         pl.col('start').str.strptime(pl.Datetime).alias('start'),
         pl.col('end').str.strptime(pl.Datetime).alias('end')
     )
-    return (df,)
+    maxtime = np.ceil(((df.to_pandas()['end'] - df.to_pandas()['start']).dt.total_seconds() / 60).max())
+    return df, maxtime
 
 
 @app.cell
@@ -82,8 +83,7 @@ def _(
     center_x,
     center_y,
     df,
-    month_selecter,
-    monthmap,
+    duration_selecter,
     np,
     pd,
     pen_selecter,
@@ -91,13 +91,17 @@ def _(
 ):
     # Densities
 
-    _t = df.to_pandas()
-    _t['month'] = _t['start'].dt.month
-    _t = _t[
-        (_t['station'] == pen_selecter.value) &
-        (_t['month'] == monthmap[month_selecter.value])
+    t = df.to_pandas()
+    t['duration'] = (t['end'] - t['start']).dt.total_seconds() / 60
+
+    t['month'] = t['start'].dt.month
+    t = t[
+        (t['station'] == pen_selecter.value) &
+        #(t['month'] == monthmap[month_selecter.value]) &
+        (t['duration'] >= duration_selecter.value)
     ]
-    _k = _t['start'].dt.hour + _t['start'].dt.minute/60
+    _k = t['start'].dt.hour + t['start'].dt.minute/60
+
 
     dens_elements = []
     pig_elements = []
@@ -129,9 +133,9 @@ def _(
     dens_elements.append(Path(d=path_data, stroke='black', fill=cat10_dic[pen_selecter.value], opacity = 0.2))
 
     # circles per pig
-    pigradius = {k: (i+1)*5 for i, k in enumerate(list(_t.value_counts('tattoo').index))}
+    pigradius = {k: (i+1)*5 for i, k in enumerate(list(t.value_counts('tattoo').index))}
 
-    for i, r in _t.iterrows():
+    for i, r in t.iterrows():
         _angle = (np.pi * 2 / 24) * r['start'].hour + r['start'].minute 
         _x = center_x + np.sin(_angle) * (radius + pigradius[r['tattoo']] + 100)
         _y = center_y + np.cos(_angle) * (radius + pigradius[r['tattoo']] + 100)
@@ -147,6 +151,7 @@ def _(
         pig_elements,
         pigradius,
         r,
+        t,
         x,
         y,
     )
@@ -181,20 +186,21 @@ def _(Circle, Line, Text, center_x, center_y, np, radius):
 
 
 @app.cell
-def _(df, mo, monthmap):
+def _(df, maxtime, mo):
     pen_selecter = mo.ui.dropdown(
         options=df['station'].unique(),
         label="Select a pen.",
         allow_select_none = False,
         value='1'
     )
-    month_selecter = mo.ui.dropdown(
-        options=monthmap.keys(),
-        label="Select a month.",
-        allow_select_none = False,
-        value='dec'
+    duration_selecter = mo.ui.slider(
+        start=0,
+        stop=maxtime,
+        label="Minimimal event duration.",
+        value=0
     )
-    return month_selecter, pen_selecter
+
+    return duration_selecter, pen_selecter
 
 
 @app.cell
@@ -204,8 +210,8 @@ def _(pen_selecter):
 
 
 @app.cell
-def _(month_selecter):
-    month_selecter
+def _(duration_selecter):
+    duration_selecter
     return
 
 
