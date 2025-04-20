@@ -98,7 +98,7 @@ def _(mo, np, pl):
 @app.cell
 def _():
     center_x = 400 # middle point of figure, in x
-    center_y = 900 # middle point of figure, in y
+    center_y = 400 # middle point of figure, in y
     radius = 100
     return center_x, center_y, radius
 
@@ -234,8 +234,8 @@ def _(
 def _(Circle, Text, color_map, vc):
     color_legends = []
 
-    _x = 1200
-    _y = 200
+    _x = 50
+    _y = 50
     for tattoo, count in list(vc.to_dict().items())[::-1]:
         color_legends.append(
             Circle(
@@ -338,12 +338,24 @@ def _(pig_selecter):
 
 
 @app.cell
-def _(SVG, clock, color_legends, dens_elements, mo, pig_elements):
+def _(SVG, color_legends, mo):
+     # Define the SVG plot
+    plot_legends = SVG(
+        width=600,
+        height=400, 
+        elements= color_legends
+    )
+    mo.Html(plot_legends.as_str())
+    return (plot_legends,)
+
+
+@app.cell
+def _(SVG, clock, dens_elements, mo, pig_elements):
     # Define the SVG plot
     plot = SVG(
-        width=2500,
+        width=2000,
         height=1800, 
-        elements= dens_elements + clock + pig_elements + color_legends
+        elements= dens_elements + clock + pig_elements
     )
     mo.Html(plot.as_str())
     return (plot,)
