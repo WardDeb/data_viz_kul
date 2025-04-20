@@ -124,7 +124,7 @@ def _(datetime, df_intake, np, pd, time, timedelta):
         df = df_intake[(df_intake['start']>date)&(df_intake['end']<end_date)]
         df = df.groupby('tattoo')['intake'].sum().reset_index()
         df = pd.DataFrame(df).sort_values(by=['intake'], ascending=False)
-        top_ten_pigs = df[df['tattoo']!='     FILLING']['tattoo'][:10]
+        top_ten_pigs = df[(df['tattoo']!='     FILLING')&(df['tattoo']!=' GHOST VISIT')]['tattoo'][:10]
         intakes = df[df['tattoo']!='     FILLING']['intake'][:10]
         return list(top_ten_pigs),list(intakes)
 
@@ -145,14 +145,14 @@ def _(datetime, df_intake, np, pd, time, timedelta):
 
 
 @app.cell(hide_code=True)
-def _(Polyline, Text, Title, pd, timedelta):
+def _(Polyline, Text, Title, abs, pd, timedelta):
     ########################################
     ########### CREATING SVG ###############
     ########################################
 
     def create_weightlabels(day_max, night_max, colors):
         day_labels = [f"{(day_max//3)*i} kg" for i in range(1,4)]
-        night_labels = [f"{(night_max//3)*i} kg" for i in range(1,4)]
+        night_labels = [f"{(abs(night_max)//3)*i} kg" for i in range(1,4)]
         labels = day_labels[::-1] + ["0 kg"] +night_labels
         lines = [Polyline(points = f"48,{i*32-5} 95,{i*32-5}", stroke=colors[i], fill='None', stroke_width=5) for i in range(len(colors)-1,-1,-1)]
         texts = [Text(text=f"{labels[i]}",font_size=15, x=100, y=(i)*32) for i in range(len(labels)-1,-1,-1)] 
@@ -391,7 +391,7 @@ def _(
 
     elements = G(
             elements=[axis, poly],
-            transform="rotate(-70,100,100) scale(3,3) translate(-90,100)"
+            transform="rotate(-70,100,100) scale(2.5,2.5) translate(-90,100)"
         )
 
     plot1 = SVG(
