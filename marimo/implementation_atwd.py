@@ -338,18 +338,6 @@ def _(pig_selecter):
 
 
 @app.cell
-def _(SVG, color_legends, mo):
-     # Define the SVG plot
-    plot_legends = SVG(
-        width=600,
-        height=400, 
-        elements= color_legends
-    )
-    mo.Html(plot_legends.as_str())
-    return (plot_legends,)
-
-
-@app.cell
 def _(SVG, clock, dens_elements, mo, pig_elements):
     # Define the SVG plot
     plot = SVG(
@@ -359,6 +347,18 @@ def _(SVG, clock, dens_elements, mo, pig_elements):
     )
     mo.Html(plot.as_str())
     return (plot,)
+
+
+@app.cell
+def _(SVG, color_legends, mo):
+     # Define the SVG plot
+    plot_legends = SVG(
+        width=600,
+        height=1800, 
+        elements= color_legends
+    )
+    mo.Html(plot_legends.as_str())
+    return (plot_legends,)
 
 
 if __name__ == "__main__":
