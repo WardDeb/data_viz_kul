@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.11.31"
+__generated_with = "0.11.26"
 app = marimo.App(width="full")
 
 
@@ -139,7 +139,7 @@ def _(datetime, df_intake, np, pd, time, timedelta):
             avg_duration_per_sitting = pigs_df['duration'].sum()/n_eating_times
             avg_eating_rate = pigs_df['rate'].sum()/n_eating_times
             prefered_eating_hour = int(pigs_df.groupby('hour')['intake'].mean().reset_index().sort_values(by=['intake'], ascending=False).iloc[0]['hour'])
-            stats.append({'pig':pigs[i],'total_intake':intakes[i], 'n_eat_times':n_eating_times, 'avg_duration':avg_duration_per_sitting, 'avg_eating_rate':avg_eating_rate, 'prefered_eat_hour':prefered_eating_hour})
+            stats.append({'pig':pigs[i],'total_intake':intakes[i], 'n_eat_times':n_eating_times, 'avg_duration':avg_duration_per_sitting, 'avg_eating_rate':avg_eating_rate, 'prefered_eat_hour':prefered_eating_hour, 'id':pigs[i]})
         return stats
     return cartesian_to_polar, cumulative_intake, stats_top_ten, top_ten_pigs
 
@@ -200,11 +200,12 @@ def _(Polyline, Text, Title, pd, timedelta):
 @app.cell
 def _(Circle, Ellipse, G, Path, Title, np):
     class Pig:
-        def __init__(self, eating_rate, duration, n_eating_times,prefered_eating_time,total_intake):
+        def __init__(self, eating_rate, duration, n_eating_times,prefered_eating_time,total_intake, id):
             self.e_rate = eating_rate
             self.n_times = n_eating_times
             self.duration = duration
             self.total_intake = total_intake
+            self.pig_id = id
             self.cx = 0
             self.cy = 0
             self.eye_radius = np.log(1+duration)
@@ -297,7 +298,7 @@ def _(Circle, Ellipse, G, Path, Title, np):
         def draw_pig(self, position_x):
             return G(
                 elements=[
-                    Title(text=f" Avg eating rate: {self.e_rate:.2f} kg/s \n Avg duration per sitting: {self.duration:.2f} s \n Total times eating: {self.n_times} \n prefered eating time: {self.translate_y}:00 \n total intake {self.total_intake:.2f} kg"),
+                    Title(text=f"Pig: {self.pig_id}\n| Avg eating rate: {self.e_rate:.2f} kg/s \n| Avg duration per sitting: {self.duration:.2f}s \n| Total times eating: {self.n_times} \n| prefered eating time: {self.translate_y}:00 \n| total intake {self.total_intake:.2f} kg"),
                     self.draw_head_ears(),
                     self.draw_eyes(),
                     self.draw_nose()
@@ -305,12 +306,6 @@ def _(Circle, Ellipse, G, Path, Title, np):
                 transform=f"translate({position_x},{self.translate_y*50})"
             )
     return (Pig,)
-
-
-@app.cell
-def _(Title):
-    print(dir(Title))
-    return
 
 
 @app.cell
@@ -358,11 +353,6 @@ def _(mo):
 
 
 @app.cell
-def _():
-    return
-
-
-@app.cell
 def _(end_date, mo, start_date):
     date_picker = mo.ui.date(label="Pick a Date to show pig eating behaviour", start=start_date.value, stop=end_date.value)
     return (date_picker,)
@@ -401,7 +391,7 @@ def _(
 
     elements = G(
             elements=[axis, poly],
-            transform="rotate(-70,100,100) scale(3,3) translate(-90,50)"
+            transform="rotate(-70,100,100) scale(3,3) translate(-90,100)"
         )
 
     plot1 = SVG(
@@ -428,7 +418,8 @@ def _(Pig, date_picker, stats_top_ten, top_ten_pigs):
                            stats[i]['avg_duration'],
                            stats[i]['n_eat_times'],
                            stats[i]['prefered_eat_hour'],
-                           stats[i]['total_intake'])
+                           stats[i]['total_intake'],
+                           stats[i]['id'])
                           )
         position_x.append( position_x[len(position_x)-1] + 2*50*stats[i]['avg_eating_rate'])
     return (
@@ -471,7 +462,7 @@ def _(
             x=-100, 
             y=-130, 
             text=f"pig eating behaviour of {date_picker.value}", 
-            font_size=100
+            font_size=100,
     )
 
     x_labels = Text(text="total intake ranked from least to most", x=0,y=-10, font_size=30)
