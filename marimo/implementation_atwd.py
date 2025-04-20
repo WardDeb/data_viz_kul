@@ -28,7 +28,35 @@ def _():
     import numpy as np
     import polars as pl
     import pandas as pd
-    return np, pd, pl
+    import matplotlib
+    import matplotlib.colors as mcolors
+    return matplotlib, mcolors, np, pd, pl
+
+
+@app.cell
+def _(mo):
+    mo.md(
+        """
+        <style>
+          .tooltip-text {
+            display: none;
+            font-size: 12px;
+            fill: black;  /* Tooltip text color */
+            pointer-events: none;  /* Prevent the text from interfering with hover */
+          }
+
+          .my-circle:hover + .tooltip-text {
+            display: block;
+          }
+
+          .my-circle:hover {
+            fill: orange;
+            cursor: pointer;
+          }
+        </style>
+        """
+    )
+    return
 
 
 @app.cell
@@ -69,24 +97,36 @@ def _(mo, np, pl):
 
 @app.cell
 def _():
-    center_x = 400 # middle point of figure, in x
-    center_y = 400 # middle point of figure, in y
+    center_x = 800 # middle point of figure, in x
+    center_y = 900 # middle point of figure, in y
     radius = 100
     return center_x, center_y, radius
+
+
+@app.cell
+def _(df, pl):
+    # Group and collect unique values
+    grouped = df.group_by("station").agg(pl.col("tattoo").unique())
+    pen_to_pig = dict(zip(grouped["station"], grouped["tattoo"]))
+    return grouped, pen_to_pig
 
 
 @app.cell
 def _(
     Circle,
     Path,
+    Text,
     cat10_dic,
     center_x,
     center_y,
     df,
-    duration_selecter,
+    matplotlib,
+    mcolors,
     np,
     pd,
     pen_selecter,
+    pig_selecter,
+    pig_spacing,
     radius,
 ):
     # Densities
@@ -96,10 +136,15 @@ def _(
 
     t['month'] = t['start'].dt.month
     t = t[
+        (t['station'] == pen_selecter.value)
+        #(t['month'] == monthmap[month_selecter.value])
+    ]
+    circledf = t[
         (t['station'] == pen_selecter.value) &
         #(t['month'] == monthmap[month_selecter.value]) &
-        (t['duration'] >= duration_selecter.value)
+        (t['tattoo'].isin(pig_selecter.value))
     ]
+
     _k = t['start'].dt.hour + t['start'].dt.minute/60
 
 
@@ -133,28 +178,84 @@ def _(
     dens_elements.append(Path(d=path_data, stroke='black', fill=cat10_dic[pen_selecter.value], opacity = 0.2))
 
     # circles per pig
-    pigradius = {k: (i+1)*5 for i, k in enumerate(list(t.value_counts('tattoo').index))}
+    vc = circledf.value_counts('tattoo')
+    norm = mcolors.Normalize(vmin=vc.min(), vmax=vc.max())
+    cmap = matplotlib.colormaps["RdBu_r"]
+    color_map = {
+        item: mcolors.to_hex(cmap(norm(count)))  # cmap(norm(count)) returns RGBA, to_hex converts to hex
+        for item, count in vc.items()
+    }
+    pigradius = {k: (i+1)*5*pig_spacing.value for i, k in enumerate(list(vc.index)[::-1])}
 
-    for i, r in t.iterrows():
+    for i, r in circledf.iterrows():
         _angle = (np.pi * 2 / 24) * r['start'].hour + r['start'].minute 
         _x = center_x + np.sin(_angle) * (radius + pigradius[r['tattoo']] + 100)
         _y = center_y + np.cos(_angle) * (radius + pigradius[r['tattoo']] + 100)
         pig_elements.append(
-            Circle(cx = _x, cy = _y, r = 2, stroke='none', fill='black', opacity = 0.2)
+            Circle(
+                cx = _x,
+                cy = _y,
+                r = r['duration'],
+                stroke='none',
+                fill=color_map[r['tattoo']],
+                opacity = 0.2,
+                class_="my-circle",
+            )
+        )
+        pig_elements.append(
+            Text(
+                x = _x,
+                y = _y,
+                text=f"pen {r['station']}, pig {r['tattoo']}, duration = {round(r['duration'], 1)} mins",  
+                class_="tooltip-text",
+            )
         )
     return (
+        circledf,
+        cmap,
+        color_map,
         d,
         dens_elements,
         density,
         i,
+        norm,
         path_data,
         pig_elements,
         pigradius,
         r,
         t,
+        vc,
         x,
         y,
     )
+
+
+@app.cell
+def _(Circle, Text, color_map, vc):
+    color_legends = []
+
+    _x = 1800
+    _y = 200
+    for tattoo, count in list(vc.to_dict().items())[::-1]:
+        color_legends.append(
+            Circle(
+                cx = _x,
+                cy = _y,
+                r = 5,
+                stroke='none',
+                fill=color_map[tattoo],
+                opacity = 0.2
+            )
+        )
+        color_legends.append(
+            Text(
+                x = _x + 50,
+                y = _y,
+                text=f"pig {tattoo}, total feeding events {count}",  
+            )
+        )
+        _y += 50
+    return color_legends, count, tattoo
 
 
 @app.cell
@@ -186,20 +287,30 @@ def _(Circle, Line, Text, center_x, center_y, np, radius):
 
 
 @app.cell
-def _(df, maxtime, mo):
+def _(df, mo):
     pen_selecter = mo.ui.dropdown(
         options=df['station'].unique(),
         label="Select a pen.",
         allow_select_none = False,
         value='1'
     )
-    duration_selecter = mo.ui.slider(
-        start=0,
-        stop=maxtime,
-        label="Minimimal event duration.",
-        value=0
+    pig_spacing = mo.ui.slider(
+        start=5,
+        stop=20,
+        label="Pig spacing.",
+        value=5
     )
-    return duration_selecter, pen_selecter
+    return pen_selecter, pig_spacing
+
+
+@app.cell
+def _(mo, pen_selecter, pen_to_pig):
+    pig_selecter = mo.ui.multiselect(
+        options=pen_to_pig[pen_selecter.value],
+        label="Select pigs to visualize",
+        value=[pen_to_pig[pen_selecter.value].to_list()[0]]
+    )
+    return (pig_selecter,)
 
 
 @app.cell
@@ -209,18 +320,30 @@ def _(pen_selecter):
 
 
 @app.cell
-def _(duration_selecter):
-    duration_selecter
+def _(pig_spacing):
+    pig_spacing
     return
 
 
 @app.cell
-def _(SVG, clock, dens_elements, mo, pig_elements):
+def _(pig_selecter):
+    pig_selecter
+    return
+
+
+@app.cell
+def _(pig_selecter):
+    print(f"Selected pigs = {' '.join(pig_selecter.value)}")
+    return
+
+
+@app.cell
+def _(SVG, clock, color_legends, dens_elements, mo, pig_elements):
     # Define the SVG plot
     plot = SVG(
-        width=800,
-        height=800, 
-        elements= dens_elements + clock + pig_elements
+        width=2500,
+        height=1800, 
+        elements= dens_elements + clock + pig_elements + color_legends
     )
     mo.Html(plot.as_str())
     return (plot,)
