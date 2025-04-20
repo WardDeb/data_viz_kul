@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.11.31"
+__generated_with = "0.12.9"
 app = marimo.App(width="medium")
 
 
@@ -97,7 +97,7 @@ def _(mo, np, pl):
 
 @app.cell
 def _():
-    center_x = 800 # middle point of figure, in x
+    center_x = 400 # middle point of figure, in x
     center_y = 900 # middle point of figure, in y
     radius = 100
     return center_x, center_y, radius
@@ -234,7 +234,7 @@ def _(
 def _(Circle, Text, color_map, vc):
     color_legends = []
 
-    _x = 1800
+    _x = 1200
     _y = 200
     for tattoo, count in list(vc.to_dict().items())[::-1]:
         color_legends.append(
@@ -295,10 +295,10 @@ def _(df, mo):
         value='1'
     )
     pig_spacing = mo.ui.slider(
-        start=5,
-        stop=20,
+        start=1,
+        stop=10,
         label="Pig spacing.",
-        value=5
+        value=1
     )
     return pen_selecter, pig_spacing
 
