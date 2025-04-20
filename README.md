@@ -2,9 +2,16 @@
 
 ## How to run
 
+### With pip
+
   > clone repo  
   > pip install .  
   > marimo run marimo
+
+### With uv
+
+  > clone repo
+  > uv run marimo run marimo
 
 ## Project - pig feeding
 
