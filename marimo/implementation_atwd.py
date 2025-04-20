@@ -342,7 +342,7 @@ def _(SVG, clock, dens_elements, mo, pig_elements):
     # Define the SVG plot
     plot = SVG(
         width=2000,
-        height=1800, 
+        height=1000, 
         elements= dens_elements + clock + pig_elements
     )
     mo.Html(plot.as_str())
